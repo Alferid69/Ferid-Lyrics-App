@@ -1,0 +1,14 @@
+{
+  "files": {
+    "main.css": "/Ferid-Lyrics-App/static/css/main.75d23a51.css",
+    "main.js": "/Ferid-Lyrics-App/static/js/main.70b92eee.js",
+    "static/media/background.jpg": "/Ferid-Lyrics-App/static/media/background.462a77a403fc03d94b40.jpg",
+    "index.html": "/Ferid-Lyrics-App/index.html",
+    "main.75d23a51.css.map": "/Ferid-Lyrics-App/static/css/main.75d23a51.css.map",
+    "main.70b92eee.js.map": "/Ferid-Lyrics-App/static/js/main.70b92eee.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.75d23a51.css",
+    "static/js/main.70b92eee.js"
+  ]
+}
