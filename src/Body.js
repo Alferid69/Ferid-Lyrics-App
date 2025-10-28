@@ -5,35 +5,39 @@ import { Line } from "./Line";
 import Footer from "./Footer";
 
 export function Body() {
-  const { song, artist, setErrorMessage } = useContext(LyricsContext);
+  const { song, artist } = useContext(LyricsContext);
   const [lyrics, setLyrics] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [suggestedSong, setSuggestedSong] = useState("");
-
-  const lyricsLine = [];
+  const [error, setError] = useState("");
 
   useEffect(
     function () {
       const controller = new AbortController();
 
       async function fetchLyrics() {
+        if (!artist || !song) return;
+
         try {
-          if (artist && song) {
-            setIsLoading(true);
-            const res = await fetch(
-              `https://api.vagalume.com.br/search.php?art=${artist}&mus=${song}&apikey=${process.env.REACT_APP_API_KEY}`,
-              {
-                signal: controller.signal,
-              }
-            );
-            if (!res.ok) throw new Error("failed to fetch lyrics");
-            const data = await res.json();
-            if (data.type === "notfound") throw new Error("Music Not Found");
-            setLyrics(data.mus[0].text);
-            setSuggestedSong(data.mus[0].name);
+          setIsLoading(true);
+          setError("");
+          setLyrics("");
+          const res = await fetch(
+            `https://api.lyrics.ovh/v1/${artist}/${song}`,
+            { signal: controller.signal }
+          );
+
+          const data = await res.json();
+
+          if (data.error) {
+            throw new Error(data.error);
           }
-        } catch (error) {
-          if (error.name !== "AbortError") console.log("some shit happened");
+
+          setLyrics(data.lyrics);
+        } catch (err) {
+          if (err.name !== "AbortError") {
+            console.error(err.message);
+            setError("Lyrics not found for this song.");
+          }
         } finally {
           setIsLoading(false);
         }
@@ -44,21 +48,22 @@ export function Body() {
         controller.abort();
       };
     },
-    [artist, song, isLoading, setErrorMessage]
+    [artist, song]
   );
 
-  lyrics.split("\n").map((line) => lyricsLine.push(line));
+  const lyricsLines = lyrics ? lyrics.split("\n") : [];
 
   return (
     <div className="mt-5 pt-4 text-bg-dark">
       <h4 className="text-uppercase">
-        {artist} | {suggestedSong !== "" ? suggestedSong : song}
+        {artist} | {song}
       </h4>
-      {!isLoading ? (
-        lyricsLine.map((line, i) => <Line line={line} key={i} />)
-      ) : (
-        <Loader />
-      )}
+      {isLoading && <Loader />}
+      {!isLoading && error && <div>{error}</div>}
+      {!isLoading &&
+        !error &&
+        lyrics &&
+        lyricsLines.map((line, i) => <Line line={line} key={i} />)}
       <Footer />
     </div>
   );

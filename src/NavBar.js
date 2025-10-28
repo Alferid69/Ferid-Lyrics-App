@@ -1,16 +1,20 @@
-import { useContext, useEffect, useRef } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { LyricsContext } from "./App";
 
 export function NavBar() {
-  const { artist, song, setSong, setArtist } = useContext(LyricsContext);
+  const { setSong, setArtist } = useContext(LyricsContext);
   const inputRef = useRef(null);
+  const [currentArtist, setCurrentArtist] = useState("");
+  const [currentSong, setCurrentSong] = useState("");
 
-  useEffect(()=>{
+  useEffect(() => {
     inputRef.current.focus();
-  },[])
+  }, []);
 
   function handleSubmit(e) {
     e.preventDefault();
+    setArtist(currentArtist);
+    setSong(currentSong);
   }
 
   return (
@@ -27,8 +31,8 @@ export function NavBar() {
             <input
               className="form-control"
               placeholder="Artist"
-              value={artist}
-              onChange={(e) => setArtist(e.target.value)}
+              value={currentArtist}
+              onChange={(e) => setCurrentArtist(e.target.value)}
               ref={inputRef}
             />
           </div>
@@ -36,9 +40,14 @@ export function NavBar() {
             <input
               className="form-control"
               placeholder="Song"
-              value={song}
-              onChange={(e) => setSong(e.target.value)}
+              value={currentSong}
+              onChange={(e) => setCurrentSong(e.target.value)}
             />
+          </div>
+          <div className="form-group">
+            <button className="btn btn-primary" type="submit">
+              Search
+            </button>
           </div>
         </form>
       </div>
